@@ -70,23 +70,19 @@ def agent_httptrigger(req: func.HttpRequest) -> func.HttpResponse:
         )
 
         messages = project_client.agents.list_messages(thread_id=thread.id)
-        response_data = {
-            "thread_id": thread.id,
-            "agent_id": agent.id,
-            "messages": [
-                {
-                    "id": m["id"],
-                    "role": m["role"],
-                    "text": [part["text"]["value"] for part in m["content"] if "text" in part]
-                }
-                for m in messages.data
-            ]
-        }
+        assistant_messages = [m for m in messages.data if m["role"] == "assistant"]
+        if assistant_messages:
+            assistant_message = assistant_messages[-1]
+            assistant_text = " ".join(
+                part["text"]["value"] for part in assistant_message["content"] if "text" in part
+            )
+        else:
+            assistant_text = "No assistant message found."
 
         return func.HttpResponse(
-            json.dumps(response_data),
+            assistant_text,
             status_code=200,
-            mimetype="application/json"
+            mimetype="text/plain"
         )
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
