@@ -32,7 +32,7 @@ def agent_httptrigger(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400
         )
 
-    conn_str = os.environ.get("AIProjectConnString", "")
+    conn_str = os.environ.get("AIProjectConnString", "swedencentral.api.azureml.ms;96e48853-6344-4e08-8acf-ac10bba60796;agents;agents")
     if not conn_str:
         logging.error("AIProjectConnString is not set in local.settings.json or environment variables.")
         return func.HttpResponse(
